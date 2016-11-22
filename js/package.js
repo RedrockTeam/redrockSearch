@@ -49,7 +49,6 @@ var ajax = function (conf) {
 
     var xhr = new XMLHttpRequest();
 
-    console.log(url)
     xhr.open(method, url, true);
 
     if (method == 'GET' || method == 'get') {

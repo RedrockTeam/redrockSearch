@@ -118,33 +118,33 @@ EventUtil.addEvent($('#prev'), 'click', function () {
         changeClassName(pages);
         pages[index - 1].className = 'pc-index pages';
     }
-        pageTurn();
-        backToTop();      
-})
+    pageTurn();
+    backToTop();      
+});
 
-var nextPage = function () {
-    index ++;
-    changeClassName(pages);
+//next page
+EventUtil.addEvent($('#next'), 'click', function () {
 
-    if (index >= totalPage) {
+        index ++;
+        changeClassName(pages);
+    
+    if (index > totalPage) {
+        index --;
+        pages[index - 1].className = 'pc-index pages';
         return 0;
     } else {
-        if (index > 5 || index < totalPage - 2) {
+
+        if (index > 5 && index < totalPage - 2) {
             whenMark(index, '+');
-            console.log(totalPage);
         } else {
-            pages[index - 1].className = 'pc-index pages';    
-            // console.log(index);
+            pages[index - 1].className = 'pc-index pages';
         }
     }   
 
     pageTurn();
     backToTop();          
 
-};
-
-//next page
-EventUtil.addEvent($('#next'), 'click', nextPage);
+});
 
 // BT-down movies
 ajax({
@@ -154,20 +154,18 @@ ajax({
         var movImg = $$('.movies-img');
         var movTitle = $$('.movies-title');
         var goToMov = $$('.go-to-movies');
+        var imgToMov = $$('.img-to-movies');
 
         for (var i = 0; i < movTitle.length; i++) {
+
             movTitle[i].innerHTML = res[i].title;
             goToMov[i].href = res[i].href;
             movImg[i].src = res[i].image;
-            
+            imgToMov[i].href = res[i].href;
         }
 
     }
-})
-
-
-
-
+});
 
 function get(res) {
     var time = new Date();
@@ -182,8 +180,7 @@ function get(res) {
         $('.page').style.display = 'none';
         $('.search-results').style.display = 'none';
         $('.footer').id = 'mainFooter';
-        // $('.page').remove();
-        // $('.search-results').remove();
+
     } else {
         $('.total-page').innerHTML = '共' + res.total + '条结果';
         $('.no-results').innerHTML = '';
@@ -193,8 +190,12 @@ function get(res) {
 
         totalPage = Math.ceil(res.total / 10);
 
+        for (var i = 0; i < pages.length; i++) {
+            pages[i].style.display = 'block';
+        }
+
         if (totalPage < 8 ) {
-            for (var i = 8 - totalPage; i <= 7; i++) {
+            for (var i = totalPage; i <= 7; i++) {
                 pages[i].style.display = 'none';
             }
         } else {
@@ -202,8 +203,17 @@ function get(res) {
                 pages[i].style.display = 'block';
             }
         } 
-
+        //clear page
         for (var i = 0; i < resultsContent.length; i++) {
+            resultsTitle[i].href = '';
+            resultsTitle[i].innerHTML = '';
+            resultsContent[i].innerHTML = '';
+            address[i].href = '';
+            address[i].innerHTML = '';
+        }
+
+        for (var i = 0; i < res.info.length; i++) {
+
             var infor = res.info[i];
             var text = infor.content.text.toString();
             var title = infor.title.toString();
@@ -219,12 +229,12 @@ function get(res) {
             address[i].href = infor.url;
             address[i].innerHTML = infor.title + '-' + time.toLocaleDateString() + '-';
         }
+
     }    
 } 
 
 function pageTurn () {
     var text = searchInput.value.replace(/\?|\/|\\|\#/,'');
-    // console.log(text); 
     ajax({
         url: 'http://172.22.161.66/results/' + text + '/' + index,
         method: 'GET',
